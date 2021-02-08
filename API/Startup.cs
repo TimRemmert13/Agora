@@ -1,8 +1,11 @@
 using System.Security.Claims;
+using API.Data;
+using API.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -12,9 +15,10 @@ namespace WebAPIApplication
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        private readonly IConfiguration _config;
+        public Startup(IConfiguration config)
         {
-            Configuration = configuration;
+            _config = config;
         }
 
         public IConfiguration Configuration { get; }
@@ -28,7 +32,7 @@ namespace WebAPIApplication
                     builder =>
                     {
                         builder
-                        .WithOrigins("http://localhost:8080")
+                        .WithOrigins("http://localhost:4200")
                         .AllowAnyMethod()
                         .AllowAnyHeader()
                         .AllowCredentials();
@@ -56,6 +60,10 @@ namespace WebAPIApplication
 
             // Register the scope authorization handler
             services.AddSingleton<IAuthorizationHandler, HasScopeHandler>();
+            services.AddDbContext<DataContext>(options =>
+           {
+               options.UseSqlite("Data Source=agora.db");
+           });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
