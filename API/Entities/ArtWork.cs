@@ -13,8 +13,8 @@ namespace API.Entities
         [Required]
         public string Description { get; set; }
         [Required]
-        public string ImageUrl { get; set; }
-        public ICollection<string> Tags { get; set; }
+        public Image Image { get; set; }
+        public ICollection<Tag> Tags { get; set; }
         public DateTime Created { get; set; } = DateTime.Now;
         public DateTime Updated { get; set; } = DateTime.Now;
         public AppUser Artist { get; set; }

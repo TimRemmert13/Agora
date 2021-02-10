@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20210208154404_updatedDb")]
-    partial class updatedDb
+    [Migration("20210209121209_addedTags")]
+    partial class addedTags
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -83,6 +83,25 @@ namespace API.Data.Migrations
                     b.ToTable("ArtWorks");
                 });
 
+            modelBuilder.Entity("API.Entities.Tag", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("ArtWorkId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ArtWorkId");
+
+                    b.ToTable("Tag");
+                });
+
             modelBuilder.Entity("API.Entities.ArtWork", b =>
                 {
                     b.HasOne("API.Entities.AppUser", "Artist")
@@ -90,6 +109,13 @@ namespace API.Data.Migrations
                         .HasForeignKey("AppUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("API.Entities.Tag", b =>
+                {
+                    b.HasOne("API.Entities.ArtWork", null)
+                        .WithMany("Tags")
+                        .HasForeignKey("ArtWorkId");
                 });
 #pragma warning restore 612, 618
         }

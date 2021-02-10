@@ -13,7 +13,5 @@ namespace API.Data
         public DbSet<AppUser> Users { get; set; }
         public DbSet<ArtWork> ArtWorks { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder options)
-            => options.UseSqlite("Data Source=agora.db");
     }
 }

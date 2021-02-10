@@ -1,6 +1,6 @@
 using System.Security.Claims;
 using API.Data;
-using API.Extensions;
+using API.Auth;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -10,6 +10,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using Azure.Storage.Blobs;
+using API.Interfaces;
+using API.Services;
 
 namespace WebAPIApplication
 {
@@ -39,12 +42,12 @@ namespace WebAPIApplication
                     });
             });
 
-            var domain = $"https://{Configuration["Auth0:Domain"]}/";
+            var domain = $"https://{_config["Auth0:Domain"]}/";
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
                     options.Authority = domain;
-                    options.Audience = Configuration["Auth0:Audience"];
+                    options.Audience = _config["Auth0:Audience"];
                     // options.TokenValidationParameters = new TokenValidationParameters
                     // {
                     //     NameClaimType = ClaimTypes.NameIdentifier
@@ -64,6 +67,8 @@ namespace WebAPIApplication
            {
                options.UseSqlite("Data Source=agora.db");
            });
+            services.AddSingleton(x => new BlobServiceClient(_config.GetConnectionString("AzureStorage")));
+            services.AddSingleton<IAzureStorageService, AzureStorageService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
