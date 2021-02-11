@@ -13,6 +13,7 @@ using Microsoft.IdentityModel.Tokens;
 using Azure.Storage.Blobs;
 using API.Interfaces;
 using API.Services;
+using API.Data.Respositories;
 
 namespace WebAPIApplication
 {
@@ -69,6 +70,7 @@ namespace WebAPIApplication
            });
             services.AddSingleton(x => new BlobServiceClient(_config.GetConnectionString("AzureStorage")));
             services.AddSingleton<IAzureStorageService, AzureStorageService>();
+            services.AddScoped<IUserRepository, UserRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

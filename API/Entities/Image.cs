@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace API.Entities
 {
@@ -14,6 +15,7 @@ namespace API.Entities
             _uri = BASE_URL + "image/" + _storageId;
         }
 
+        [Key]
         public string StorageId
         {
             get { return _storageId; }

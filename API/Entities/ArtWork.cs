@@ -6,6 +6,19 @@ namespace API.Entities
 {
     public class ArtWork
     {
+        // public ArtWork(Guid id, string title, string description, Image image, ICollection<Tag> tags, DateTime created, DateTime updated, AppUser artist, Guid appUserId)
+        // {
+        //     Id = id;
+        //     Title = title;
+        //     Description = description;
+        //     Image = image;
+        //     Tags = tags;
+        //     Created = created;
+        //     Updated = updated;
+        //     Artist = artist;
+        //     AppUserId = appUserId;
+        // }
+
         [Required]
         public Guid Id { get; set; } = Guid.NewGuid();
         [Required]

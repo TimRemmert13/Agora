@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20210209114928_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20210211125830_UpdatedUser")]
+    partial class UpdatedUser
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -31,6 +31,15 @@ namespace API.Data.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("EmailVerified")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("FamilyName")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("GivenName")
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("LastActive")
                         .HasColumnType("TEXT");
 
@@ -40,8 +49,10 @@ namespace API.Data.Migrations
                     b.Property<double>("Longitude")
                         .HasColumnType("REAL");
 
+                    b.Property<string>("PictureUrl")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Username")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -65,7 +76,7 @@ namespace API.Data.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("ImageUrl")
+                    b.Property<string>("ImageStorageId")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
@@ -80,7 +91,44 @@ namespace API.Data.Migrations
 
                     b.HasIndex("AppUserId");
 
+                    b.HasIndex("ImageStorageId");
+
                     b.ToTable("ArtWorks");
+                });
+
+            modelBuilder.Entity("API.Entities.Image", b =>
+                {
+                    b.Property<string>("StorageId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FileName")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Uri")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("StorageId");
+
+                    b.ToTable("Image");
+                });
+
+            modelBuilder.Entity("API.Entities.Tag", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("ArtWorkId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ArtWorkId");
+
+                    b.ToTable("Tag");
                 });
 
             modelBuilder.Entity("API.Entities.ArtWork", b =>
@@ -90,6 +138,19 @@ namespace API.Data.Migrations
                         .HasForeignKey("AppUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("API.Entities.Image", "Image")
+                        .WithMany()
+                        .HasForeignKey("ImageStorageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("API.Entities.Tag", b =>
+                {
+                    b.HasOne("API.Entities.ArtWork", null)
+                        .WithMany("Tags")
+                        .HasForeignKey("ArtWorkId");
                 });
 #pragma warning restore 612, 618
         }
