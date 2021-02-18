@@ -14,6 +14,9 @@ using Azure.Storage.Blobs;
 using API.Interfaces;
 using API.Services;
 using API.Data.Respositories;
+using Auth0.AuthenticationApi;
+using API.Utilities;
+using Auth0.ManagementApi;
 
 namespace WebAPIApplication
 {
@@ -70,6 +73,8 @@ namespace WebAPIApplication
            });
             services.AddSingleton(x => new BlobServiceClient(_config.GetConnectionString("AzureStorage")));
             services.AddSingleton<IAzureStorageService, AzureStorageService>();
+            services.AddScoped<IAuthenticationApiClient>(x => new AuthenticationApiClient("dev-2gmrxw3d.us.auth0.com"));
+            services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
             services.AddScoped<IUserRepository, UserRepository>();
         }
 
