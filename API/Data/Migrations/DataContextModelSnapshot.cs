@@ -61,7 +61,8 @@ namespace API.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("AppUserId")
+                    b.Property<string>("AppUserEmail")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("Created")
@@ -72,7 +73,6 @@ namespace API.Data.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ImageStorageId")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Title")
@@ -84,7 +84,7 @@ namespace API.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AppUserId");
+                    b.HasIndex("AppUserEmail");
 
                     b.HasIndex("ImageStorageId");
 
@@ -97,6 +97,7 @@ namespace API.Data.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("FileName")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Uri")
@@ -113,10 +114,11 @@ namespace API.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid?>("ArtWorkId")
+                    b.Property<Guid>("ArtWorkId")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -130,20 +132,22 @@ namespace API.Data.Migrations
                 {
                     b.HasOne("API.Entities.AppUser", null)
                         .WithMany("ArtWorks")
-                        .HasForeignKey("AppUserId");
+                        .HasForeignKey("AppUserEmail")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("API.Entities.Image", "Image")
                         .WithMany()
-                        .HasForeignKey("ImageStorageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ImageStorageId");
                 });
 
             modelBuilder.Entity("API.Entities.Tag", b =>
                 {
                     b.HasOne("API.Entities.ArtWork", null)
                         .WithMany("Tags")
-                        .HasForeignKey("ArtWorkId");
+                        .HasForeignKey("ArtWorkId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

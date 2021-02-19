@@ -1,46 +1,56 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using API.Entities;
 using API.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Data.Respositories
 {
     public class ArtWorkRespository : IArtWorkRepository
     {
-        public Task<ArtWork> CreateArtWork(ArtWork artWork)
+        private readonly DataContext _context;
+        public ArtWorkRespository(DataContext context)
         {
-            throw new NotImplementedException();
+            _context = context;
         }
 
-        public Task<ArtWork> DeleteArtwork(Guid id)
+        public async Task<ArtWork> CreateArtWorkAsync(ArtWork artWork)
         {
-            throw new NotImplementedException();
+            _context.ArtWorks.Where(x => x.Tags.Any(y => y.Name == "name"));
+            await _context.ArtWorks.AddAsync(artWork);
+            return artWork;
         }
 
-        public Task<IEnumerable<ArtWork>> GetArtWorkByArtistAsync(string artist)
+        public async void DeleteArtwork(Guid id)
         {
-            throw new NotImplementedException();
+            _context.ArtWorks.Remove(await _context.ArtWorks.Where(x => x.Id == id).SingleOrDefaultAsync());
         }
 
-        public Task<ArtWork> GetArtWorkByIdAsync(Guid id)
+        public async Task<IEnumerable<ArtWork>> GetArtWorkByArtistAsync(string artist)
         {
-            throw new NotImplementedException();
+            return await _context.ArtWorks.Where(x => x.AppUserEmail == artist).ToListAsync();
         }
 
-        public Task<IEnumerable<ArtWork>> GetArtWorksAsync()
+        public async Task<ArtWork> GetArtWorkByIdAsync(Guid id)
         {
-            throw new NotImplementedException();
+            return await _context.ArtWorks.Where(x => x.Id == id).SingleOrDefaultAsync();
         }
 
-        public Task<bool> SaveAllAsync()
+        public async Task<IEnumerable<ArtWork>> GetArtWorksAsync()
         {
-            throw new NotImplementedException();
+            return await _context.ArtWorks.ToListAsync();
         }
 
-        public ArtWork Update(ArtWork artWork)
+        public async Task<bool> SaveAllAsync()
         {
-            throw new NotImplementedException();
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        public void Update(ArtWork artWork)
+        {
+            _context.Entry(artWork).State = EntityState.Modified;
         }
     }
 }

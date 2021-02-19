@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace API.Data.Migrations
 {
-    public partial class InitialMigration : Migration
+    public partial class UpdatedTags : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -12,7 +12,7 @@ namespace API.Data.Migrations
                 columns: table => new
                 {
                     StorageId = table.Column<string>(nullable: false),
-                    FileName = table.Column<string>(nullable: true),
+                    FileName = table.Column<string>(nullable: false),
                     Uri = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -47,26 +47,26 @@ namespace API.Data.Migrations
                     Id = table.Column<Guid>(nullable: false),
                     Title = table.Column<string>(nullable: false),
                     Description = table.Column<string>(nullable: false),
-                    ImageStorageId = table.Column<string>(nullable: false),
+                    ImageStorageId = table.Column<string>(nullable: true),
                     Created = table.Column<DateTime>(nullable: false),
                     Updated = table.Column<DateTime>(nullable: false),
-                    AppUserId = table.Column<string>(nullable: true)
+                    AppUserEmail = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ArtWorks", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ArtWorks_Users_AppUserId",
-                        column: x => x.AppUserId,
+                        name: "FK_ArtWorks_Users_AppUserEmail",
+                        column: x => x.AppUserEmail,
                         principalTable: "Users",
                         principalColumn: "Email",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_ArtWorks_Image_ImageStorageId",
                         column: x => x.ImageStorageId,
                         principalTable: "Image",
                         principalColumn: "StorageId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -74,8 +74,8 @@ namespace API.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
-                    Name = table.Column<string>(nullable: true),
-                    ArtWorkId = table.Column<Guid>(nullable: true)
+                    Name = table.Column<string>(nullable: false),
+                    ArtWorkId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -85,13 +85,13 @@ namespace API.Data.Migrations
                         column: x => x.ArtWorkId,
                         principalTable: "ArtWorks",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ArtWorks_AppUserId",
+                name: "IX_ArtWorks_AppUserEmail",
                 table: "ArtWorks",
-                column: "AppUserId");
+                column: "AppUserEmail");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ArtWorks_ImageStorageId",

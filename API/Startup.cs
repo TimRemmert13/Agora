@@ -1,5 +1,5 @@
-using System.Security.Claims;
 using API.Data;
+using API.Data.Respositories;
 using API.Auth;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -8,15 +8,12 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.IdentityModel.Tokens;
 using Azure.Storage.Blobs;
 using API.Interfaces;
 using API.Services;
-using API.Data.Respositories;
 using Auth0.AuthenticationApi;
 using API.Utilities;
-using Auth0.ManagementApi;
+using API.Middleware;
 
 namespace WebAPIApplication
 {
@@ -76,19 +73,13 @@ namespace WebAPIApplication
             services.AddScoped<IAuthenticationApiClient>(x => new AuthenticationApiClient("dev-2gmrxw3d.us.auth0.com"));
             services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IArtWorkRepository, ArtWorkRespository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseHsts();
-            }
+            app.UseMiddleware<ExceptionMiddleware>();
 
             app.UseHttpsRedirection();
 

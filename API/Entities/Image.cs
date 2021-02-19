@@ -26,6 +26,7 @@ namespace API.Entities
                 _storageId = String.Join(".", valueArray);
             }
         }
+        [Required]
         public string FileName { get; set; }
         private string _uri;
         public string Uri
