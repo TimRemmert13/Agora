@@ -1,0 +1,26 @@
+[
+  {
+    "Email": "tremmert93@gmail.com",
+    "EmailVerified": true,
+    "Username": "Tim",
+    "GivenName": "Tim",
+    "FamilyName": "Remmert",
+    "Name": "Tim Remmert",
+    "Nickname": "Tim",
+    "ImageUrl": "my image url here",
+    "Latitude": 40.758896,
+    "Longitude": -73.985130
+  },
+  {
+    "Email": "test@example.com",
+    "EmailVerified": false,
+    "Username": "IamSteveRogers",
+    "GivenName": "Steve",
+    "FamilyName": "Rogers",
+    "Name": "Steve Rogers",
+    "Nickname": "Steve",
+    "ImageUrl": "my image url here",
+    "Latitude": 48.864716,
+    "Longitude": 2.349014
+  }
+]

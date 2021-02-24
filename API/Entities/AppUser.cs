@@ -7,6 +7,7 @@ namespace API.Entities
     public class AppUser
     {
         [Key]
+        public Guid Id { get; set; } = Guid.NewGuid();
         public string Email { get; set; }
         public bool EmailVerified { get; set; }
         [Required]
@@ -20,5 +21,20 @@ namespace API.Entities
         public double? Longitude { get; set; }
         public double? Latitude { get; set; }
         public IEnumerable<ArtWork> ArtWorks { get; set; }
+        
+        public override bool Equals(object obj)
+        {
+            if (obj == null)
+            {
+                return false;
+            }
+
+            return obj is AppUser user && this.Id.Equals(user.Id);
+        }
+
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
+        }
     }
 }

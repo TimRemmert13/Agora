@@ -18,7 +18,7 @@ namespace API.Data.Respositories
 
         public async Task<ArtWork> CreateArtWorkAsync(ArtWork artWork)
         {
-            _context.ArtWorks.Where(x => x.Tags.Any(y => y.Name == "name"));
+            //_context.ArtWorks.Where(x => x.Tags.Any(y => y.Name == "name"));
             await _context.ArtWorks.AddAsync(artWork);
             return artWork;
         }

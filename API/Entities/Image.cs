@@ -5,8 +5,10 @@ namespace API.Entities
 {
     public class Image
     {
-        private const string BASE_URL = "http://localhost:3010/api/";
+        private const string BASE_URL = "http://localhost:5000/api/";
         private string _storageId;
+        
+        public Image() {}
 
         public Image(string fileName)
         {
@@ -36,6 +38,20 @@ namespace API.Entities
             {
                 _uri = BASE_URL + "image/" + _storageId;
             }
+        }
+        public override bool Equals(object obj)
+        {
+            if (obj == null)
+            {
+                return false;
+            }
+
+            return obj is Image image && this._storageId.Equals(image._storageId);
+        }
+
+        public override int GetHashCode()
+        {
+            return this._storageId.GetHashCode();
         }
     }
 }

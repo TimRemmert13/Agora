@@ -18,7 +18,6 @@ namespace API.Services
         {
             _blobServiceClient = blobServiceClient;
         }
-
         public async Task<BlobDownloadInfo> GetImageContent(string name)
         {
             var containerClient = _blobServiceClient.GetBlobContainerClient("art-bucket");

@@ -17,5 +17,20 @@ namespace API.Entities
         public DateTime Updated { get; set; } = DateTime.Now;
         [Required]
         public string AppUserEmail { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null)
+            {
+                return false;
+            }
+
+            return obj is ArtWork work && this.Id.Equals(work.Id);
+        }
+
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
+        }
     }
 }
