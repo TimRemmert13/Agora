@@ -11,47 +11,48 @@ using Xunit.Abstractions;
 
 namespace API.Tests
 {
-    public abstract class SetUpTests : IDisposable
+    internal class SetUpTests : IDisposable, ISetupTests
     {
-        private ITestOutputHelper _output;
 
-        private protected DataContext Context;
+        private DataContext _context;
 
-        protected SetUpTests(ITestOutputHelper output)
+        internal SetUpTests() {}
+
+        public DataContext GetContext()
         {
-            _output = output;
+            return _context;
         }
-        private protected DataContext GetTestDbContext()
+        public DataContext GetTestDbContext(string testClass)
         {
             var options = new DbContextOptionsBuilder<DataContext>()
-                .UseSqlite("data source=Test.db").Options;
-            Context = new DataContext(options);
-            Context.Database.EnsureCreated();
-            if (Context.Users.Count() <= 0)
+                .UseSqlite($"data source={testClass}.db").Options;
+            _context = new DataContext(options);
+            _context.Database.EnsureCreated();
+            if (_context.Users.Count() <= 0)
             {
                 // read in users data
                 using (StreamReader r = new StreamReader($"{Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName}/TestData/UsersData.json"))
                 {
                     string json = r.ReadToEnd();
                     IEnumerable<AppUser> users = JsonSerializer.Deserialize<IEnumerable<AppUser>>(json);
-                    Context.Users.AddRange(users);
+                    _context.Users.AddRange(users);
                 }
                 // read in art works data
                 using (StreamReader r = new StreamReader($"{Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName}/TestData/ArtWorksData.json"))
                 {
                     string json = r.ReadToEnd();
                     IEnumerable<ArtWork> artworks = JsonSerializer.Deserialize<IEnumerable<ArtWork>>(json);
-                    Context.ArtWorks.AddRange(artworks);
+                    _context.ArtWorks.AddRange(artworks);
                 }
             }
 
-            Context.SaveChanges();
-            return Context;
+            _context.SaveChanges();
+            return _context;
         }
         public void Dispose()
         {
-            Context.Database.EnsureDeleted();
-            Context.Dispose();
+            _context.Database.EnsureDeleted();
+            _context.Dispose();
         }
     }
 }

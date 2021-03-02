@@ -8,6 +8,7 @@ namespace API.Entities
     {
         [Key]
         public Guid Id { get; set; } = Guid.NewGuid();
+        [Required]
         public string Email { get; set; }
         public bool EmailVerified { get; set; }
         [Required]

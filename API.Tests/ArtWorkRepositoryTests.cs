@@ -24,14 +24,17 @@ using Xunit.Abstractions;
 
 namespace API.Tests
 {
-    public class ArtWorkRespositoryTests : SetUpTests
+    public class ArtWorkRespositoryTests : IDisposable
     {
         private readonly IArtWorkRepository _repository;
-        private static ITestOutputHelper output;
+        private static ITestOutputHelper _output;
+        private readonly ISetupTests _setup;
 
-        public ArtWorkRespositoryTests(ITestOutputHelper output) : base(output)
+        public ArtWorkRespositoryTests(ITestOutputHelper output)
         {
-            _repository = new ArtWorkRespository(GetTestDbContext());
+            _output = output;
+            _setup = new SetUpTests();
+            _repository = new ArtWorkRespository(_setup.GetTestDbContext(this.GetType().Name));
         }
 
         public static IEnumerable<object[]> GetArtWorkPositive()
@@ -61,7 +64,7 @@ namespace API.Tests
             // arrange
             var result = await _repository.CreateArtWorkAsync(artWork);
             await _repository.SaveAllAsync();
-            var query = await Context.ArtWorks.Where(x => x.Id == artWork.Id).SingleOrDefaultAsync();
+            var query = await _setup.GetContext().ArtWorks.Where(x => x.Id == artWork.Id).SingleOrDefaultAsync();
             Assert.Equal(result, query);
         }
         
@@ -125,7 +128,11 @@ namespace API.Tests
             Assert.True(result);
             Assert.True(updated.Title.Equals("Updated Title"));
         }
-        
+
+        public void Dispose()
+        {
+            _setup.Dispose();
+        }
     }
     
    
