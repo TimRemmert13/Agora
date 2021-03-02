@@ -80,7 +80,7 @@ namespace API.Controllers
         public async Task<ActionResult> DeleteArtWork(string id)
         {
             var parsedGuid = Guid.Parse(id);
-            _artWorkRepository.DeleteArtwork(parsedGuid);
+            _artWorkRepository.DeleteArtworkAsync(parsedGuid);
             if (await _artWorkRepository.SaveAllAsync())
             {
                 return NoContent();

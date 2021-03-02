@@ -14,6 +14,7 @@ using API.Services;
 using AutoMapper.Mappers;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using Castle.Core.Internal;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
 using Moq;
@@ -23,17 +24,14 @@ using Xunit.Abstractions;
 
 namespace API.Tests
 {
-    public class ArtWorkRespositoryTests : IDisposable
+    public class ArtWorkRespositoryTests : SetUpTests
     {
-        private IArtWorkRepository _repository;
+        private readonly IArtWorkRepository _repository;
+        private static ITestOutputHelper output;
 
-        private ITestOutputHelper _output;
-
-        private DataContext _context;
-        public ArtWorkRespositoryTests(ITestOutputHelper output)
+        public ArtWorkRespositoryTests(ITestOutputHelper output) : base(output)
         {
-            _output = output;
-            _repository = new ArtWorkRespository(GetTestDbContextAsync());
+            _repository = new ArtWorkRespository(GetTestDbContext());
         }
 
         public static IEnumerable<object[]> GetArtWorkPositive()
@@ -63,7 +61,7 @@ namespace API.Tests
             // arrange
             var result = await _repository.CreateArtWorkAsync(artWork);
             await _repository.SaveAllAsync();
-            var query = await _context.ArtWorks.Where(x => x.Id == artWork.Id).SingleOrDefaultAsync();
+            var query = await Context.ArtWorks.Where(x => x.Id == artWork.Id).SingleOrDefaultAsync();
             Assert.Equal(result, query);
         }
         
@@ -76,39 +74,58 @@ namespace API.Tests
             await Assert.ThrowsAsync<DbUpdateException>(() => _repository.SaveAllAsync());
         }
 
-        private DataContext GetTestDbContextAsync()
+        [Theory]
+        [InlineData("tremmert@gmail.com")]
+        public async Task GetArtWorkByArtistAsync_ShouldReturnArtWorkListOfArtist(string artist)
         {
-            var options = new DbContextOptionsBuilder<DataContext>()
-                .UseSqlite("data source=Test.db").Options;
-            _context = new DataContext(options);
-            _context.Database.EnsureCreated();
-            if (_context.Users.Count() <= 0)
-            {
-                // read in users data
-                using (StreamReader r = new StreamReader($"{Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName}/TestData/UsersData.json"))
-                {
-                    string json = r.ReadToEnd();
-                    IEnumerable<AppUser> users = JsonSerializer.Deserialize<IEnumerable<AppUser>>(json);
-                    _context.Users.AddRange(users);
-                }
-                // read in art works data
-                using (StreamReader r = new StreamReader($"{Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName}/TestData/ArtWorksData.json"))
-                {
-                    string json = r.ReadToEnd();
-                    IEnumerable<ArtWork> artworks = JsonSerializer.Deserialize<IEnumerable<ArtWork>>(json);
-                    _context.ArtWorks.AddRange(artworks);
-                }
-            }
-
-            _context.SaveChanges();
-            return _context;
+            var artworks = await _repository.GetArtWorkByArtistAsync(artist);
+            Assert.All(artworks, x => x.AppUserEmail.Equals(artist));
         }
 
-        public void Dispose()
+        [Fact]
+        public async Task GetArtWorksAsync_ShouldReturnArtWork()
         {
-            _context.Database.EnsureDeleted();
-            _context.Dispose();
+            var artworks = await _repository.GetArtWorksAsync();
+            Assert.False(artworks.IsNullOrEmpty());
         }
+
+        [Fact]
+        public async Task GetArtWorkByIdAsync_ShouldReturnArtWork()
+        {
+            // Arrange
+            var artworks = await _repository.GetArtWorksAsync();
+            // Action
+            var selected = await _repository.GetArtWorkByIdAsync(artworks.First().Id);
+            // Assert
+            Assert.True(selected.Id == artworks.First().Id);
+        }
+
+        [Fact]
+        public async Task DeleteArtWorkAsync_ShouldDeleteArtWork()
+        {
+            var artworks = await _repository.GetArtWorksAsync();
+            var toBeDeleted = artworks.First();
+            _repository.DeleteArtworkAsync(toBeDeleted.Id);
+            var result = await _repository.SaveAllAsync();
+            var newList = await _repository.GetArtWorksAsync();
+            Assert.True(result);
+            Assert.DoesNotContain(toBeDeleted, newList);
+        }
+
+        [Fact]
+        public async Task Update_ShouldUpdateArtWork()
+        {
+            var artworks = await _repository.GetArtWorksAsync();
+            var toBeUpdated = artworks.First();
+            var id = toBeUpdated.Id;
+            toBeUpdated.Title = "Updated Title";
+            _repository.Update(toBeUpdated);
+            var result = await _repository.SaveAllAsync();
+            var updated = await _repository.GetArtWorkByIdAsync(id);
+            Assert.True(result);
+            Assert.True(updated.Title.Equals("Updated Title"));
+        }
+        
     }
     
    

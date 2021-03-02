@@ -15,7 +15,7 @@ namespace API.Data.Respositories
             _context = context;
         }
 
-        public async Task<bool> CreateUserAync(AppUser user)
+        public async Task<bool> CreateUserAsync(AppUser user)
         {
             await _context.Users.AddAsync(user);
             bool result = await SaveAllAsync();

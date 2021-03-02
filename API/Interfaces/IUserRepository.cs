@@ -13,7 +13,7 @@ namespace API.Interfaces
         Task<bool> SaveAllAsync();
         void DeleteUser(string email);
 
-        Task<bool> CreateUserAync(AppUser user);
+        Task<bool> CreateUserAsync(AppUser user);
 
     }
 }

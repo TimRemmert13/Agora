@@ -12,7 +12,7 @@ namespace API.Interfaces
         Task<IEnumerable<ArtWork>> GetArtWorksAsync();
         Task<IEnumerable<ArtWork>> GetArtWorkByArtistAsync(string artist);
         Task<ArtWork> GetArtWorkByIdAsync(Guid id);
-        void DeleteArtwork(Guid id);
+        void DeleteArtworkAsync(Guid id);
         Task<ArtWork> CreateArtWorkAsync(ArtWork artWork);
 
     }

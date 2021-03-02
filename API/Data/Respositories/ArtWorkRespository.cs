@@ -23,7 +23,7 @@ namespace API.Data.Respositories
             return artWork;
         }
 
-        public async void DeleteArtwork(Guid id)
+        public async void DeleteArtworkAsync(Guid id)
         {
             _context.ArtWorks.Remove(await _context.ArtWorks.Where(x => x.Id == id).SingleOrDefaultAsync());
         }
