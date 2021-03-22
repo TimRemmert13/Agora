@@ -1,20 +1,28 @@
-using System.Security.Claims;
+using API.Data;
+using API.Data.Respositories;
+using API.Auth;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.IdentityModel.Tokens;
+using Azure.Storage.Blobs;
+using API.Interfaces;
+using API.Services;
+using Auth0.AuthenticationApi;
+using API.Utilities;
+using API.Middleware;
 
 namespace WebAPIApplication
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        private readonly IConfiguration _config;
+        public Startup(IConfiguration config)
         {
-            Configuration = configuration;
+            _config = config;
         }
 
         public IConfiguration Configuration { get; }
@@ -28,19 +36,19 @@ namespace WebAPIApplication
                     builder =>
                     {
                         builder
-                        .WithOrigins("http://localhost:8080")
+                        .WithOrigins("http://localhost:4200")
                         .AllowAnyMethod()
                         .AllowAnyHeader()
                         .AllowCredentials();
                     });
             });
 
-            var domain = $"https://{Configuration["Auth0:Domain"]}/";
+            var domain = $"https://{_config["Auth0:Domain"]}/";
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
                     options.Authority = domain;
-                    options.Audience = Configuration["Auth0:Audience"];
+                    options.Audience = _config["Auth0:Audience"];
                     // options.TokenValidationParameters = new TokenValidationParameters
                     // {
                     //     NameClaimType = ClaimTypes.NameIdentifier
@@ -56,19 +64,22 @@ namespace WebAPIApplication
 
             // Register the scope authorization handler
             services.AddSingleton<IAuthorizationHandler, HasScopeHandler>();
+            services.AddDbContext<DataContext>(options =>
+           {
+               options.UseSqlite("Data Source=agora.db");
+           });
+            services.AddSingleton(x => new BlobServiceClient(_config.GetConnectionString("AzureStorage")));
+            services.AddSingleton<IAzureStorageService, AzureStorageService>();
+            services.AddScoped<IAuthenticationApiClient>(x => new AuthenticationApiClient("dev-2gmrxw3d.us.auth0.com"));
+            services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IArtWorkRepository, ArtWorkRespository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseHsts();
-            }
+            app.UseMiddleware<ExceptionMiddleware>();
 
             app.UseHttpsRedirection();
 

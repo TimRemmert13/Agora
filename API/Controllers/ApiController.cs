@@ -1,5 +1,10 @@
 using System.Linq;
+using System.Threading.Tasks;
+using API.Entities;
+using API.Interfaces;
+using Azure.Storage.Blobs.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPIApplication.Controllers
@@ -8,6 +13,32 @@ namespace WebAPIApplication.Controllers
     [ApiController]
     public class ApiController : ControllerBase
     {
+        private readonly IAzureStorageService _azureStorageService;
+        public ApiController(IAzureStorageService azureStorageService)
+        {
+            _azureStorageService = azureStorageService;
+        }
+
+        [HttpGet("image/{name}")]
+        public async Task<ActionResult> GetImageContent(string name)
+        {
+            var image = await _azureStorageService.GetImageContent(name);
+            return File(image.Content, image.ContentType);
+        }
+
+        [HttpPost("upload")]
+        public async Task<ActionResult<Image>> Upload(IFormFile file)
+        {
+            return await _azureStorageService.UploadImageAsync(file);
+        }
+
+        [HttpDelete("image/{name}")]
+        public async Task<ActionResult<Image>> Delete(string name)
+        {
+            bool result = await _azureStorageService.DeleteImageAsync(name);
+            return Ok();
+        }
+
         [HttpGet("public")]
         public IActionResult Public()
         {
