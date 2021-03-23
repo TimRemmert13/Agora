@@ -29,5 +29,13 @@ namespace API.Utilities
             var items = await source.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
             return new PagedList<T>(items, count, pageNumber, pageSize);
         }
+        
+        public static PagedList<T> Create(IEnumerable<T> source, int pageNumber, 
+            int pageSize)
+        {
+            var count = source.Count();
+            var items = source.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+            return new PagedList<T>(items, count, pageNumber, pageSize);
+        }
     }
 }

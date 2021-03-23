@@ -30,10 +30,10 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<AllArtWorksDto>>> GetAllArtWorks([FromQuery] PaginationParams param)
+        public async Task<ActionResult<IEnumerable<AllArtWorksDto>>> GetAllArtWorks([FromQuery] ArtWorkParams artWorkParams)
         {
             
-           var artWorks = await _artWorkRepository.GetArtWorksAsync(param);
+           var artWorks = await _artWorkRepository.GetArtWorksAsync(artWorkParams);
            Response.AddPaginationHeader(artWorks.CurrentPage, artWorks.PageSize, artWorks.TotalCount, artWorks.TotalPages);
            return Ok(artWorks);
         }

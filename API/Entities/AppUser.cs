@@ -19,8 +19,8 @@ namespace API.Entities
         public string Name { get; set; }
         public string Nickname { get; set; }
         public string ImageUrl { get; set; }
-        public double? Longitude { get; set; }
-        public double? Latitude { get; set; }
+        public double Longitude { get; set; }
+        public double Latitude { get; set; }
         public ICollection<ArtWork> ArtWorks { get; set; }
         
         public override bool Equals(object obj)

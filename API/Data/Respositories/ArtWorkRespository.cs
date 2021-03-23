@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Device.Location;
 using System.Linq;
 using System.Threading.Tasks;
 using API.DTOs;
@@ -9,6 +10,7 @@ using API.Utilities;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace API.Data.Respositories
 {
@@ -45,14 +47,27 @@ namespace API.Data.Respositories
             return await _context.ArtWorks.Where(x => x.Id == id).SingleOrDefaultAsync();
         }
 
-        public async Task<PagedList<AllArtWorksDto>> GetArtWorksAsync(PaginationParams param)
+        public async Task<PagedList<AllArtWorksDto>> GetArtWorksAsync(ArtWorkParams artWorkParams)
         {
+            // create query
             var query = _context.ArtWorks.AsQueryable();
             query = query.Include(a => a.Artist);
-            await _context.ArtWorks.Include(a => a.Artist).ToListAsync();
-            return await PagedList<AllArtWorksDto>.CreateAsync(query
-                .ProjectTo<AllArtWorksDto>(_mapper.ConfigurationProvider)
-                .AsNoTracking(), param.PageNumber, param.PageSize);
+
+            // sort by order by value
+            var source = new GeoCoordinate(artWorkParams.Latitude, artWorkParams.Longitude);
+            var queryList = query.AsEnumerable();
+            queryList = artWorkParams.OrderBy switch
+            {
+                "proximity" =>
+                    queryList.OrderBy(a =>
+                        new GeoCoordinate(a.Artist.Latitude, a.Artist.Longitude).GetDistanceTo(source)
+                    )
+            };
+
+            return PagedList<AllArtWorksDto>.Create(
+                _mapper.Map<IEnumerable<ArtWork>, IEnumerable<AllArtWorksDto>>(queryList), 
+                artWorkParams.PageNumber, 
+                artWorkParams.PageSize);
         }
 
         public async Task<bool> SaveAllAsync()

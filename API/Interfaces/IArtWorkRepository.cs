@@ -11,7 +11,7 @@ namespace API.Interfaces
     {
         void Update(ArtWork artWork);
         Task<bool> SaveAllAsync();
-        Task<PagedList<AllArtWorksDto>> GetArtWorksAsync(PaginationParams param);
+        Task<PagedList<AllArtWorksDto>> GetArtWorksAsync(ArtWorkParams param);
         Task<IEnumerable<ArtWork>> GetArtWorkByArtistAsync(string artist);
         Task<ArtWork> GetArtWorkByIdAsync(Guid id);
         void DeleteArtworkAsync(Guid id);
