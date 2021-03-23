@@ -21,7 +21,7 @@ namespace API.Entities
         public string ImageUrl { get; set; }
         public double? Longitude { get; set; }
         public double? Latitude { get; set; }
-        public IEnumerable<ArtWork> ArtWorks { get; set; }
+        public ICollection<ArtWork> ArtWorks { get; set; }
         
         public override bool Equals(object obj)
         {

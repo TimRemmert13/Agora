@@ -13,6 +13,7 @@ namespace API.Utilities
         {
             CreateMap<AppUser, UserDto>();
             CreateMap<ArtWork, ArtWorkDto>();
+            CreateMap<ArtWork, AllArtWorksDto>();
         }
     }
 }

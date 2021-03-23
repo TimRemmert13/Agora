@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using API.DTOs;
 using API.Entities;
+using API.Utilities;
 
 namespace API.Interfaces
 {
@@ -9,7 +11,7 @@ namespace API.Interfaces
     {
         void Update(ArtWork artWork);
         Task<bool> SaveAllAsync();
-        Task<IEnumerable<ArtWork>> GetArtWorksAsync();
+        Task<PagedList<AllArtWorksDto>> GetArtWorksAsync(PaginationParams param);
         Task<IEnumerable<ArtWork>> GetArtWorkByArtistAsync(string artist);
         Task<ArtWork> GetArtWorkByIdAsync(Guid id);
         void DeleteArtworkAsync(Guid id);

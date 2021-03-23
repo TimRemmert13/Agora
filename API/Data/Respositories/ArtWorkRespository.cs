@@ -2,8 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using API.DTOs;
 using API.Entities;
 using API.Interfaces;
+using API.Utilities;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Data.Respositories
@@ -11,9 +15,12 @@ namespace API.Data.Respositories
     public class ArtWorkRespository : IArtWorkRepository
     {
         private readonly DataContext _context;
-        public ArtWorkRespository(DataContext context)
+        private readonly IMapper _mapper;
+
+        public ArtWorkRespository(DataContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         public async Task<ArtWork> CreateArtWorkAsync(ArtWork artWork)
@@ -38,9 +45,14 @@ namespace API.Data.Respositories
             return await _context.ArtWorks.Where(x => x.Id == id).SingleOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<ArtWork>> GetArtWorksAsync()
+        public async Task<PagedList<AllArtWorksDto>> GetArtWorksAsync(PaginationParams param)
         {
-            return await _context.ArtWorks.Include(a => a.Artist).ToListAsync();
+            var query = _context.ArtWorks.AsQueryable();
+            query = query.Include(a => a.Artist);
+            await _context.ArtWorks.Include(a => a.Artist).ToListAsync();
+            return await PagedList<AllArtWorksDto>.CreateAsync(query
+                .ProjectTo<AllArtWorksDto>(_mapper.ConfigurationProvider)
+                .AsNoTracking(), param.PageNumber, param.PageSize);
         }
 
         public async Task<bool> SaveAllAsync()

@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using API.DTOs;
 using API.Entities;
+using API.Extensions;
 using API.Interfaces;
+using API.Utilities;
 using Auth0.AuthenticationApi;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -28,9 +30,12 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<ArtWork>> GetAllArtWorks()
+        public async Task<ActionResult<IEnumerable<AllArtWorksDto>>> GetAllArtWorks([FromQuery] PaginationParams param)
         {
-            return await _artWorkRepository.GetArtWorksAsync();
+            
+           var artWorks = await _artWorkRepository.GetArtWorksAsync(param);
+           Response.AddPaginationHeader(artWorks.CurrentPage, artWorks.PageSize, artWorks.TotalCount, artWorks.TotalPages);
+           return Ok(artWorks);
         }
 
         [HttpGet("artist/{artist}")]
