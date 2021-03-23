@@ -1,6 +1,12 @@
+using API.Auth;
 using API.Data;
 using API.Data.Respositories;
-using API.Auth;
+using API.Interfaces;
+using API.Middleware;
+using API.Services;
+using API.Utilities;
+using Auth0.AuthenticationApi;
+using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -8,14 +14,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Azure.Storage.Blobs;
-using API.Interfaces;
-using API.Services;
-using Auth0.AuthenticationApi;
-using API.Utilities;
-using API.Middleware;
 
-namespace WebAPIApplication
+namespace API
 {
     public class Startup
     {
@@ -74,6 +74,8 @@ namespace WebAPIApplication
             services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IArtWorkRepository, ArtWorkRespository>();
+            services.AddControllers().AddNewtonsoftJson(x =>
+                x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

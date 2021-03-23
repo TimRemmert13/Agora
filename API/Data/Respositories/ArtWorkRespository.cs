@@ -28,9 +28,9 @@ namespace API.Data.Respositories
             _context.ArtWorks.Remove(await _context.ArtWorks.Where(x => x.Id == id).SingleOrDefaultAsync());
         }
 
-        public async Task<IEnumerable<ArtWork>> GetArtWorkByArtistAsync(string artist)
+        public async Task<IEnumerable<ArtWork>> GetArtWorkByArtistAsync(string artistId)
         {
-            return await _context.ArtWorks.Where(x => x.AppUserEmail == artist).ToListAsync();
+            return await _context.ArtWorks.Where(x => x.AppUserId == artistId).ToListAsync();
         }
 
         public async Task<ArtWork> GetArtWorkByIdAsync(Guid id)
@@ -40,7 +40,7 @@ namespace API.Data.Respositories
 
         public async Task<IEnumerable<ArtWork>> GetArtWorksAsync()
         {
-            return await _context.ArtWorks.ToListAsync();
+            return await _context.ArtWorks.Include(a => a.Artist).ToListAsync();
         }
 
         public async Task<bool> SaveAllAsync()

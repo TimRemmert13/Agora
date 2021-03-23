@@ -5,7 +5,7 @@ namespace API.Entities
 {
     public class Image
     {
-        private const string BASE_URL = "http://localhost:5000/api/";
+        private const string BASE_URL = "http://localhost:3010/api/";
         private string _storageId;
         
         public Image() {}

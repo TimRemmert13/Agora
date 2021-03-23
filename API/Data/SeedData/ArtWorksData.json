@@ -1,0 +1,86 @@
+[
+  {
+    "Title": "Artwork 1",
+    "Description": "description 1",
+    "Image": {
+      "StorageId": "1",
+      "FileName": "imagefilename.png",
+      "Uri": "http://localhost:5000/api/images/1"
+    },
+    "Tags": [
+      {
+        "Name": "tag 1"
+      },
+      {
+        "Name": "tag 2"
+      },
+      {
+        "Name": "tag 3"
+      }
+    ],
+    "AppUserId": "auth0|602fb8ef2918c60069e83722"
+  },
+  {
+    "Title": "Artwork 2",
+    "Description": "description 2",
+    "Image": {
+      "StorageId": "2",
+      "FileName": "imagefilename2.png",
+      "Uri": "http://localhost:5000/api/images/2"
+    },
+    "Tags": [
+      {
+        "Name": "tag 1"
+      },
+      {
+        "Name": "tag 2"
+      },
+      {
+        "Name": "tag 3"
+      }
+    ],
+    "AppUserId": "auth0|602fb8ef2918c60069e83722"
+  },
+  {
+    "Title": "Artwork 3",
+    "Description": "description 3",
+    "Image": {
+      "StorageId": "3",
+      "FileName": "imagefilename3.png",
+      "Uri": "http://localhost:5000/api/images/3"
+    },
+    "Tags": [
+      {
+        "Name": "tag 1"
+      },
+      {
+        "Name": "tag 2"
+      },
+      {
+        "Name": "tag 3"
+      }
+    ],
+    "AppUserId": "auth0|60588786794b1e006b0768cb"
+  },
+  {
+    "Title": "Artwork 4",
+    "Description": "description 4",
+    "Image": {
+      "StorageId": "4",
+      "FileName": "imagefilename3.png",
+      "Uri": "http://localhost:5000/api/images/3"
+    },
+    "Tags": [
+      {
+        "Name": "tag 1"
+      },
+      {
+        "Name": "tag 2"
+      },
+      {
+        "Name": "tag 3"
+      }
+    ],
+    "AppUserId": "auth0|60588dce794b1e006b076998"
+  }
+]

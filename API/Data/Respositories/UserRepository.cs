@@ -29,14 +29,12 @@ namespace API.Data.Respositories
 
         public async Task<AppUser> GetUserAsync(string email)
         {
-            var user = await _context.Users.Where(x => x.Email == email).SingleOrDefaultAsync();
-            return user;
+            return await _context.Users.Where(x => x.Email == email).SingleOrDefaultAsync();
         }
 
         public async Task<IEnumerable<AppUser>> GetUsersAsync()
         {
-            var users = await _context.Users.ToListAsync();
-            return users;
+            return await _context.Users.ToListAsync();
         }
 
         public async Task<bool> SaveAllAsync()

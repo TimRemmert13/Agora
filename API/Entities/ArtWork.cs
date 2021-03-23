@@ -16,7 +16,9 @@ namespace API.Entities
         public DateTime Created { get; set; } = DateTime.Now;
         public DateTime Updated { get; set; } = DateTime.Now;
         [Required]
-        public string AppUserEmail { get; set; }
+        public string AppUserId { get; set; }
+
+        public AppUser Artist { get; set; }
 
         public override bool Equals(object obj)
         {

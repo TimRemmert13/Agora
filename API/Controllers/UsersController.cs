@@ -31,23 +31,25 @@ namespace API.Controllers
         private readonly IAuthenticationApiClient _authApiClient;
         private readonly IUserRepository _userRepository;
         private readonly IConfiguration _config;
-        public UsersController(IAuthenticationApiClient authApiClient, IUserRepository userRepository, IConfiguration config)
+        private readonly IMapper _mapper;
+        public UsersController(IAuthenticationApiClient authApiClient, IUserRepository userRepository, IConfiguration config, IMapper mapper)
         {
+            _mapper = mapper;
             _config = config;
             _userRepository = userRepository;
             _authApiClient = authApiClient;
         }
 
         [HttpGet("{email}")]
-        public async Task<AppUser> GetUserByEmail(string email)
+        public async Task<UserDto> GetUserByEmail(string email)
         {
-            return await _userRepository.GetUserAsync(email);
+            return _mapper.Map<AppUser, UserDto>(await _userRepository.GetUserAsync(email));
         }
 
         [HttpGet]
-        public async Task<IEnumerable<AppUser>> GetAllUsers()
+        public async Task<IEnumerable<UserDto>> GetAllUsers()
         {
-            return await _userRepository.GetUsersAsync();
+           return _mapper.Map<IEnumerable<AppUser>, IEnumerable<UserDto>>(await _userRepository.GetUsersAsync());
         }
 
         [Authorize]

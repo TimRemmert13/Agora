@@ -7,7 +7,7 @@ namespace API.Entities
     public class AppUser
     {
         [Key]
-        public Guid Id { get; set; } = Guid.NewGuid();
+        public string Id { get; set; }
         [Required]
         public string Email { get; set; }
         public bool EmailVerified { get; set; }

@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using API.DTOs;
 using API.Entities;
 using API.Interfaces;
 using Auth0.AuthenticationApi;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -15,10 +17,12 @@ namespace API.Controllers
         private readonly IArtWorkRepository _artWorkRepository;
         private readonly IAuthenticationApiClient _authApiClient;
         private readonly IConfiguration _config;
-        private const string BASE_URL = "http://localhost:5000/api/artwork";
-        public ArtWorkController(IArtWorkRepository artWorkRepository, IAuthenticationApiClient authApiClient, IConfiguration config)
+        private readonly IMapper _mapper;
+        private const string BASE_URL = "http://localhost:3010/api/artwork";
+        public ArtWorkController(IArtWorkRepository artWorkRepository, IAuthenticationApiClient authApiClient, IConfiguration config, IMapper mapper)
         {
             _config = config;
+            _mapper = mapper;
             _authApiClient = authApiClient;
             _artWorkRepository = artWorkRepository;
         }
@@ -30,16 +34,16 @@ namespace API.Controllers
         }
 
         [HttpGet("artist/{artist}")]
-        public async Task<IEnumerable<ArtWork>> GetAllArtWorksByArtist(string artist)
+        public async Task<IEnumerable<ArtWorkDto>> GetAllArtWorksByArtist(string artist)
         {
-            return await _artWorkRepository.GetArtWorkByArtistAsync(artist);
+            return _mapper.Map<IEnumerable<ArtWork>, IEnumerable<ArtWorkDto>>(await _artWorkRepository.GetArtWorkByArtistAsync(artist));
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<ArtWork>> GetArtWorkById(string id)
+        public async Task<ActionResult<ArtWorkDto>> GetArtWorkById(string id)
         {
             var parsedGuid = Guid.Parse(id);
-            return await _artWorkRepository.GetArtWorkByIdAsync(parsedGuid);
+            return _mapper.Map<ArtWork, ArtWorkDto>(await _artWorkRepository.GetArtWorkByIdAsync(parsedGuid));
         }
 
 
@@ -48,7 +52,7 @@ namespace API.Controllers
         public async Task<ActionResult<ArtWork>> CreateArtWork(ArtWork artWork, [FromHeader] string authorization)
         {
             var user = await _authApiClient.GetUserInfoAsync(authorization.Split(" ")[1]);
-            if (user.Email == artWork.AppUserEmail)
+            if (user.UserId == artWork.AppUserId)
             {
                 var newArtWork = await _artWorkRepository.CreateArtWorkAsync(artWork);
                 if (await _artWorkRepository.SaveAllAsync())
@@ -64,7 +68,7 @@ namespace API.Controllers
         public async Task<ActionResult> UpdateArtWork(ArtWork artWork, [FromHeader] string authorization)
         {
             var user = await _authApiClient.GetUserInfoAsync(authorization.Split(" ")[1]);
-            if (user.Email == artWork.AppUserEmail)
+            if (user.UserId == artWork.AppUserId)
             {
                 _artWorkRepository.Update(artWork);
                 if (await _artWorkRepository.SaveAllAsync())
