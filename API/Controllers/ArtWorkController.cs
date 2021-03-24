@@ -39,16 +39,16 @@ namespace API.Controllers
         }
 
         [HttpGet("artist/{artist}")]
-        public async Task<IEnumerable<ArtWorkDto>> GetAllArtWorksByArtist(string artist)
+        public async Task<IEnumerable<ArtWorkDto>> GetAllArtWorksByArtist(string artist, [FromQuery] ArtWorkParams artWorkParams)
         {
-            return _mapper.Map<IEnumerable<ArtWork>, IEnumerable<ArtWorkDto>>(await _artWorkRepository.GetArtWorkByArtistAsync(artist));
+            return await _artWorkRepository.GetArtWorkByArtistAsync(artist, artWorkParams);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<ArtWorkDto>> GetArtWorkById(string id)
         {
             var parsedGuid = Guid.Parse(id);
-            return _mapper.Map<ArtWork, ArtWorkDto>(await _artWorkRepository.GetArtWorkByIdAsync(parsedGuid));
+            return await _artWorkRepository.GetArtWorkByIdAsync(parsedGuid);
         }
 
 
@@ -73,13 +73,12 @@ namespace API.Controllers
         public async Task<ActionResult> UpdateArtWork(ArtWork artWork, [FromHeader] string authorization)
         {
             var user = await _authApiClient.GetUserInfoAsync(authorization.Split(" ")[1]);
-            if (user.UserId == artWork.AppUserId)
+            if (user.UserId != artWork.AppUserId) return BadRequest("Unable to Update artwork");
+            
+            _artWorkRepository.Update(artWork);
+            if (await _artWorkRepository.SaveAllAsync())
             {
-                _artWorkRepository.Update(artWork);
-                if (await _artWorkRepository.SaveAllAsync())
-                {
-                    return Ok();
-                }
+                return Ok();
             }
             return BadRequest("Unable to Update artwork");
         }

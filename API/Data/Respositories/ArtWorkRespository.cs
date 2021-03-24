@@ -9,6 +9,7 @@ using API.Interfaces;
 using API.Utilities;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
@@ -25,11 +26,11 @@ namespace API.Data.Respositories
             _mapper = mapper;
         }
 
-        public async Task<ArtWork> CreateArtWorkAsync(ArtWork artWork)
+        public async Task<ArtWorkDto> CreateArtWorkAsync(ArtWork artWork)
         {
             //_context.ArtWorks.Where(x => x.Tags.Any(y => y.Name == "name"));
             await _context.ArtWorks.AddAsync(artWork);
-            return artWork;
+            return _mapper.Map<ArtWork, ArtWorkDto>(artWork);
         }
 
         public async void DeleteArtworkAsync(Guid id)
@@ -37,14 +38,23 @@ namespace API.Data.Respositories
             _context.ArtWorks.Remove(await _context.ArtWorks.Where(x => x.Id == id).SingleOrDefaultAsync());
         }
 
-        public async Task<IEnumerable<ArtWork>> GetArtWorkByArtistAsync(string artistId)
+        public async Task<PagedList<ArtWorkDto>> GetArtWorkByArtistAsync(string artistId, ArtWorkParams artWorkParams)
         {
-            return await _context.ArtWorks.Where(x => x.AppUserId == artistId).ToListAsync();
+            // build query
+            var query = _context.ArtWorks.AsQueryable();
+            query = query.Where(a => a.AppUserId == artistId);
+            
+            // return paged result
+            return await PagedList<ArtWorkDto>.CreateAsync(
+                query.ProjectTo<ArtWorkDto>(_mapper.ConfigurationProvider).AsNoTracking(),
+                artWorkParams.PageNumber, artWorkParams.PageSize);
         }
 
-        public async Task<ArtWork> GetArtWorkByIdAsync(Guid id)
+        public async Task<ArtWorkDto> GetArtWorkByIdAsync(Guid id)
         {
-            return await _context.ArtWorks.Where(x => x.Id == id).SingleOrDefaultAsync();
+            return _mapper.Map<ArtWork, ArtWorkDto>(
+                await _context.ArtWorks.Where(x => x.Id == id).SingleOrDefaultAsync()
+                );
         }
 
         public async Task<PagedList<AllArtWorksDto>> GetArtWorksAsync(ArtWorkParams artWorkParams)

@@ -12,10 +12,10 @@ namespace API.Interfaces
         void Update(ArtWork artWork);
         Task<bool> SaveAllAsync();
         Task<PagedList<AllArtWorksDto>> GetArtWorksAsync(ArtWorkParams param);
-        Task<IEnumerable<ArtWork>> GetArtWorkByArtistAsync(string artist);
-        Task<ArtWork> GetArtWorkByIdAsync(Guid id);
+        Task<PagedList<ArtWorkDto>> GetArtWorkByArtistAsync(string artist, ArtWorkParams artWorkParams);
+        Task<ArtWorkDto> GetArtWorkByIdAsync(Guid id);
         void DeleteArtworkAsync(Guid id);
-        Task<ArtWork> CreateArtWorkAsync(ArtWork artWork);
+        Task<ArtWorkDto> CreateArtWorkAsync(ArtWork artWork);
 
     }
 }
