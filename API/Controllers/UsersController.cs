@@ -1,27 +1,18 @@
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Net.Http;
 using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
-using API.Data.Respositories;
 using API.DTOs;
 using API.Entities;
 using API.Interfaces;
 using Auth0.AuthenticationApi;
-using Auth0.AuthenticationApi.Models;
-using Auth0.ManagementApi;
-using Auth0.ManagementApi.Models;
-using Auth0.ManagementApi.Paging;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using System.Net.Http.Headers;
 using System.Net;
+using API.Utilities;
 using Microsoft.Extensions.Configuration;
 
 namespace API.Controllers
@@ -43,13 +34,13 @@ namespace API.Controllers
         [HttpGet("{email}")]
         public async Task<UserDto> GetUserByEmail(string email)
         {
-            return _mapper.Map<AppUser, UserDto>(await _userRepository.GetUserAsync(email));
+            return await _userRepository.GetUserAsync(email);
         }
 
         [HttpGet]
-        public async Task<IEnumerable<UserDto>> GetAllUsers()
+        public async Task<PagedList<UserDto>> GetAllUsers([FromQuery] UserParams userParams)
         {
-           return _mapper.Map<IEnumerable<AppUser>, IEnumerable<UserDto>>(await _userRepository.GetUsersAsync());
+           return await _userRepository.GetUsersAsync(userParams);
         }
 
         [Authorize]

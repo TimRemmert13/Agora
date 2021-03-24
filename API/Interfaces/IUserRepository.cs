@@ -1,13 +1,15 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using API.DTOs;
 using API.Entities;
+using API.Utilities;
 
 namespace API.Interfaces
 {
     public interface IUserRepository
     {
-        Task<AppUser> GetUserAsync(string email);
-        Task<IEnumerable<AppUser>> GetUsersAsync();
+        Task<UserDto> GetUserAsync(string email);
+        Task<PagedList<UserDto>> GetUsersAsync(UserParams userParams);
         void UpdateUser(AppUser user);
 
         Task<bool> SaveAllAsync();

@@ -1,8 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using API.DTOs;
 using API.Entities;
 using API.Interfaces;
+using API.Utilities;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Data.Respositories
@@ -10,9 +14,12 @@ namespace API.Data.Respositories
     public class UserRepository : IUserRepository
     {
         private readonly DataContext _context;
-        public UserRepository(DataContext context)
+        private readonly IMapper _mapper;
+
+        public UserRepository(DataContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         public async Task<bool> CreateUserAsync(AppUser user)
@@ -27,14 +34,20 @@ namespace API.Data.Respositories
             _context.Users.Remove(await _context.Users.Where(x => x.Email == email).SingleOrDefaultAsync());
         }
 
-        public async Task<AppUser> GetUserAsync(string email)
+        public async Task<UserDto> GetUserAsync(string email)
         {
-            return await _context.Users.Where(x => x.Email == email).SingleOrDefaultAsync();
+            return _mapper.Map<AppUser, UserDto>(
+                await _context.Users.Include(u => u.ArtWorks).Where(x => x.Email == email).SingleOrDefaultAsync()
+                );
         }
 
-        public async Task<IEnumerable<AppUser>> GetUsersAsync()
+        public async Task<PagedList<UserDto>> GetUsersAsync(UserParams userParams)
         {
-            return await _context.Users.ToListAsync();
+            var query = _context.Users.AsQueryable();
+            var response = await PagedList<UserDto>.CreateAsync(
+                query.ProjectTo<UserDto>(_mapper.ConfigurationProvider).AsNoTracking(),
+                userParams.PageNumber, userParams.PageSize);
+            return response;
         }
 
         public async Task<bool> SaveAllAsync()

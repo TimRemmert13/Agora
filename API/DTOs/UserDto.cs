@@ -1,3 +1,7 @@
+using System.Collections;
+using System.Collections.Generic;
+using Newtonsoft.Json;
+
 namespace API.DTOs
 {
     public class UserDto
@@ -11,7 +15,9 @@ namespace API.DTOs
         public string Name { get; set; }
         public string Nickname { get; set; }
         public string ImageUrl { get; set; }
-        public double? Longitude { get; set; }
-        public double? Latitude { get; set; }
+        public double Longitude { get; set; }
+        public double Latitude { get; set; }
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public ICollection<ArtWorkDto> ArtWorks { get; set; }
     }
 }
