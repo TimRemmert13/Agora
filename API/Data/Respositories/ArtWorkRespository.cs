@@ -80,11 +80,6 @@ namespace API.Data.Respositories
                 artWorkParams.PageSize);
         }
 
-        public async Task<bool> SaveAllAsync()
-        {
-            return await _context.SaveChangesAsync() > 0;
-        }
-
         public void Update(ArtWork artWork)
         {
             _context.Entry(artWork).State = EntityState.Modified;

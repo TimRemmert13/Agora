@@ -10,7 +10,6 @@ namespace API.Interfaces
     public interface IArtWorkRepository
     {
         void Update(ArtWork artWork);
-        Task<bool> SaveAllAsync();
         Task<PagedList<AllArtWorksDto>> GetArtWorksAsync(ArtWorkParams param);
         Task<PagedList<ArtWorkDto>> GetArtWorkByArtistAsync(string artist, ArtWorkParams artWorkParams);
         Task<ArtWorkDto> GetArtWorkByIdAsync(Guid id);

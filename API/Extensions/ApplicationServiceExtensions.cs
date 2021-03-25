@@ -21,8 +21,7 @@ namespace API.Extensions
             services.AddSingleton(x => new BlobServiceClient(config.GetConnectionString("AzureStorage")));
             services.AddSingleton<IAzureStorageService, AzureStorageService>();
             services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
-            services.AddScoped<IUserRepository, UserRepository>();
-            services.AddScoped<IArtWorkRepository, ArtWorkRespository>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddControllers().AddNewtonsoftJson(x =>
                 x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);

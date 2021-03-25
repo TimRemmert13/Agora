@@ -13,38 +13,38 @@ namespace API.Controllers
 {
     public class UsersController : BaseApiController
     {
-        private readonly IUserRepository _userRepository;
         private readonly IConfiguration _config;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public UsersController(IUserRepository userRepository, IConfiguration config, IMapper mapper)
+        public UsersController(IUnitOfWork unitOfWork, IConfiguration config, IMapper mapper)
         {
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
             _config = config;
-            _userRepository = userRepository;
         }
 
         [HttpGet("{email}")]
         public async Task<UserDto> GetUserByEmail(string email)
         {
-            return await _userRepository.GetUserByUsernameAsync(email);
+            return await _unitOfWork.UserRepository.GetUserByUsernameAsync(email);
         }
 
         [HttpGet]
         public async Task<PagedList<UserDto>> GetAllUsers([FromQuery] UserParams userParams)
         {
-            return await _userRepository.GetUsersAsync(userParams);
+            return await _unitOfWork.UserRepository.GetUsersAsync(userParams);
         }
 
         [Authorize]
         [HttpPut]
         public async Task<ActionResult> UpdateUser(AppUser updatedUser)
         {
-            var user = await _userRepository.GetUserByUsernameAsync(User.GetUsername());
+            var user = await _unitOfWork.UserRepository.GetUserByUsernameAsync(User.GetUsername());
             if (user.Username == updatedUser.Username)
             {
-                _userRepository.UpdateUser(updatedUser);
-                if (await _userRepository.SaveAllAsync())
+                _unitOfWork.UserRepository.UpdateUser(updatedUser);
+                if (await _unitOfWork.Complete())
                 {
                     return Ok();
                 }
@@ -57,16 +57,15 @@ namespace API.Controllers
         [HttpDelete("{email}")]
         public async Task<ActionResult> DeleteUser(string username)
         {
-            var user = await _userRepository.GetUserByUsernameAsync(User.GetUsername());
+            var user = await _unitOfWork.UserRepository.GetUserByUsernameAsync(User.GetUsername());
             if (user.Username == username)
             {
-                _userRepository.DeleteUser(username);
-                if (await _userRepository.SaveAllAsync())
+                _unitOfWork.UserRepository.DeleteUser(username);
+                if (await _unitOfWork.Complete())
                 {
                     return Ok();
                 }
             }
-
             return BadRequest("Unable to Delete User");
         }
     }

@@ -15,24 +15,22 @@ namespace API.Controllers
 {
     public class ArtWorkController : BaseApiController
     {
-        private readonly IArtWorkRepository _artWorkRepository;
         private readonly IConfiguration _config;
         private readonly IMapper _mapper;
-        private readonly IUserRepository _userRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private const string BASE_URL = "http://localhost:3010/api/artwork";
-        public ArtWorkController(IArtWorkRepository artWorkRepository, IConfiguration config, IMapper mapper, IUserRepository userRepository)
+        public ArtWorkController(IConfiguration config, IMapper mapper, IUnitOfWork unitOfWork)
         {
             _config = config;
             _mapper = mapper;
-            _userRepository = userRepository;
-            _artWorkRepository = artWorkRepository;
+            _unitOfWork = unitOfWork;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<AllArtWorksDto>>> GetAllArtWorks([FromQuery] ArtWorkParams artWorkParams)
         {
             
-           var artWorks = await _artWorkRepository.GetArtWorksAsync(artWorkParams);
+           var artWorks = await _unitOfWork.ArtWorkRepository.GetArtWorksAsync(artWorkParams);
            Response.AddPaginationHeader(artWorks.CurrentPage, artWorks.PageSize, artWorks.TotalCount, artWorks.TotalPages);
            return Ok(artWorks);
         }
@@ -40,14 +38,14 @@ namespace API.Controllers
         [HttpGet("artist/{artist}")]
         public async Task<IEnumerable<ArtWorkDto>> GetAllArtWorksByArtist(string artist, [FromQuery] ArtWorkParams artWorkParams)
         {
-            return await _artWorkRepository.GetArtWorkByArtistAsync(artist, artWorkParams);
+            return await _unitOfWork.ArtWorkRepository.GetArtWorkByArtistAsync(artist, artWorkParams);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<ArtWorkDto>> GetArtWorkById(string id)
         {
             var parsedGuid = Guid.Parse(id);
-            return await _artWorkRepository.GetArtWorkByIdAsync(parsedGuid);
+            return await _unitOfWork.ArtWorkRepository.GetArtWorkByIdAsync(parsedGuid);
         }
 
 
@@ -55,12 +53,12 @@ namespace API.Controllers
         [HttpPost]
         public async Task<ActionResult<ArtWork>> CreateArtWork(ArtWork artWork)
         {
-            var user = await _userRepository.GetUserByUsernameAsync(User.GetUsername());
+            var user = await _unitOfWork.UserRepository.GetUserByUsernameAsync(User.GetUsername());
             artWork.AppUserUsername = artWork.AppUserUsername.ToLower();
             if (user.Username == artWork.AppUserUsername)
             {
-                var newArtWork = await _artWorkRepository.CreateArtWorkAsync(artWork);
-                if (await _artWorkRepository.SaveAllAsync())
+                var newArtWork = await _unitOfWork.ArtWorkRepository.CreateArtWorkAsync(artWork);
+                if (await _unitOfWork.Complete())
                 {
                     return Created($"{BASE_URL}/{newArtWork.Id}", newArtWork);
                 }
@@ -72,11 +70,11 @@ namespace API.Controllers
         [HttpPut]
         public async Task<ActionResult> UpdateArtWork(ArtWork artWork, [FromHeader] string authorization)
         {
-            var user = await _userRepository.GetUserByUsernameAsync(User.GetUsername());
+            var user = await _unitOfWork.UserRepository.GetUserByUsernameAsync(User.GetUsername());
             if (user.Username != artWork.AppUserUsername) return BadRequest("Unable to Update artwork");
             
-            _artWorkRepository.Update(artWork);
-            if (await _artWorkRepository.SaveAllAsync())
+            _unitOfWork.ArtWorkRepository.Update(artWork);
+            if (await _unitOfWork.Complete())
             {
                 return Ok();
             }
@@ -88,8 +86,8 @@ namespace API.Controllers
         public async Task<ActionResult> DeleteArtWork(string id)
         {
             var parsedGuid = Guid.Parse(id);
-            _artWorkRepository.DeleteArtworkAsync(parsedGuid);
-            if (await _artWorkRepository.SaveAllAsync())
+            _unitOfWork.ArtWorkRepository.DeleteArtworkAsync(parsedGuid);
+            if (await _unitOfWork.Complete())
             {
                 return NoContent();
             }
