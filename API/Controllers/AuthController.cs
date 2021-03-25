@@ -5,7 +5,6 @@ using API.Data;
 using API.DTOs;
 using API.Entities;
 using API.Interfaces;
-using Auth0.ManagementApi.Models;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -50,6 +49,7 @@ namespace API.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<AuthUserResponseDto>> Login(LoginDto loginDto)
         {
+            loginDto.Username = loginDto.Username.ToLower();
             var user = await _context.Users.SingleOrDefaultAsync(u => u.Username == loginDto.Username);
 
             if (user == null) return Unauthorized("Incorrect Username or password");

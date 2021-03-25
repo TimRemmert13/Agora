@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using API.Entities;
-using Auth0.ManagementApi.Models;
 
 namespace API.DTOs
 {

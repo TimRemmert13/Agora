@@ -6,7 +6,6 @@ using API.Entities;
 using API.Extensions;
 using API.Interfaces;
 using API.Utilities;
-using Auth0.AuthenticationApi;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +16,6 @@ namespace API.Controllers
     public class ArtWorkController : BaseApiController
     {
         private readonly IArtWorkRepository _artWorkRepository;
-        private readonly IAuthenticationApiClient _authApiClient;
         private readonly IConfiguration _config;
         private readonly IMapper _mapper;
         private readonly IUserRepository _userRepository;
@@ -55,9 +53,10 @@ namespace API.Controllers
 
         [Authorize]
         [HttpPost]
-        public async Task<ActionResult<ArtWork>> CreateArtWork(ArtWork artWork, [FromHeader] string authorization)
+        public async Task<ActionResult<ArtWork>> CreateArtWork(ArtWork artWork)
         {
             var user = await _userRepository.GetUserByUsernameAsync(User.GetUsername());
+            artWork.AppUserUsername = artWork.AppUserUsername.ToLower();
             if (user.Username == artWork.AppUserUsername)
             {
                 var newArtWork = await _artWorkRepository.CreateArtWorkAsync(artWork);
