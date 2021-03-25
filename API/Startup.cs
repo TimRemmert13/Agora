@@ -1,6 +1,7 @@
 using API.Auth;
 using API.Data;
 using API.Data.Respositories;
+using API.Extensions;
 using API.Interfaces;
 using API.Middleware;
 using API.Services;
@@ -44,21 +45,22 @@ namespace API
             });
 
             var domain = $"https://{_config["Auth0:Domain"]}/";
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
-                {
-                    options.Authority = domain;
-                    options.Audience = _config["Auth0:Audience"];
-                    // options.TokenValidationParameters = new TokenValidationParameters
-                    // {
-                    //     NameClaimType = ClaimTypes.NameIdentifier
-                    // };
-                });
-
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy("read:messages", policy => policy.Requirements.Add(new HasScopeRequirement("read:messages", domain)));
-            });
+            // services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            //     .AddJwtBearer(options =>
+            //     {
+            //         options.Authority = domain;
+            //         options.Audience = _config["Auth0:Audience"];
+            //         // options.TokenValidationParameters = new TokenValidationParameters
+            //         // {
+            //         //     NameClaimType = ClaimTypes.NameIdentifier
+            //         // };
+            //     });
+            //
+            // services.AddAuthorization(options =>
+            // {
+            //     options.AddPolicy("read:messages", policy => policy.Requirements.Add(new HasScopeRequirement("read:messages", domain)));
+            // });
+            services.AddIdentityServices(_config);
 
             services.AddControllers();
 

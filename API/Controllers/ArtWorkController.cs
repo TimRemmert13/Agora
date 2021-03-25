@@ -20,12 +20,13 @@ namespace API.Controllers
         private readonly IAuthenticationApiClient _authApiClient;
         private readonly IConfiguration _config;
         private readonly IMapper _mapper;
+        private readonly IUserRepository _userRepository;
         private const string BASE_URL = "http://localhost:3010/api/artwork";
-        public ArtWorkController(IArtWorkRepository artWorkRepository, IAuthenticationApiClient authApiClient, IConfiguration config, IMapper mapper)
+        public ArtWorkController(IArtWorkRepository artWorkRepository, IConfiguration config, IMapper mapper, IUserRepository userRepository)
         {
             _config = config;
             _mapper = mapper;
-            _authApiClient = authApiClient;
+            _userRepository = userRepository;
             _artWorkRepository = artWorkRepository;
         }
 
@@ -56,8 +57,8 @@ namespace API.Controllers
         [HttpPost]
         public async Task<ActionResult<ArtWork>> CreateArtWork(ArtWork artWork, [FromHeader] string authorization)
         {
-            var user = await _authApiClient.GetUserInfoAsync(authorization.Split(" ")[1]);
-            if (user.UserId == artWork.AppUserId)
+            var user = await _userRepository.GetUserByUsernameAsync(User.GetUsername());
+            if (user.Username == artWork.AppUserUsername)
             {
                 var newArtWork = await _artWorkRepository.CreateArtWorkAsync(artWork);
                 if (await _artWorkRepository.SaveAllAsync())
@@ -72,8 +73,8 @@ namespace API.Controllers
         [HttpPut]
         public async Task<ActionResult> UpdateArtWork(ArtWork artWork, [FromHeader] string authorization)
         {
-            var user = await _authApiClient.GetUserInfoAsync(authorization.Split(" ")[1]);
-            if (user.UserId != artWork.AppUserId) return BadRequest("Unable to Update artwork");
+            var user = await _userRepository.GetUserByUsernameAsync(User.GetUsername());
+            if (user.Username != artWork.AppUserUsername) return BadRequest("Unable to Update artwork");
             
             _artWorkRepository.Update(artWork);
             if (await _artWorkRepository.SaveAllAsync())

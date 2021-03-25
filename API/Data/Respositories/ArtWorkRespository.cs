@@ -38,11 +38,11 @@ namespace API.Data.Respositories
             _context.ArtWorks.Remove(await _context.ArtWorks.Where(x => x.Id == id).SingleOrDefaultAsync());
         }
 
-        public async Task<PagedList<ArtWorkDto>> GetArtWorkByArtistAsync(string artistId, ArtWorkParams artWorkParams)
+        public async Task<PagedList<ArtWorkDto>> GetArtWorkByArtistAsync(string artist, ArtWorkParams artWorkParams)
         {
             // build query
             var query = _context.ArtWorks.AsQueryable();
-            query = query.Where(a => a.AppUserId == artistId);
+            query = query.Where(a => a.AppUserUsername == artist);
             
             // return paged result
             return await PagedList<ArtWorkDto>.CreateAsync(

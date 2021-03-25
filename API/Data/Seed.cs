@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using API.Entities;
@@ -19,7 +21,14 @@ namespace API.Data
             {
                 string json = r.ReadToEnd();
                 IEnumerable<AppUser> users = JsonSerializer.Deserialize<IEnumerable<AppUser>>(json);
-                context.Users.AddRange(users);
+                foreach (var user in users)
+                {
+                    using var hmac = new HMACSHA512();
+                    user.Username = user.Username.ToLower();
+                    user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes("Pa$$w0rd"));
+                    user.PasswordSalt = hmac.Key;
+                    context.Users.Add(user);
+                }
             }
             // read in art works data
             using (StreamReader r = new StreamReader($"{Directory.GetCurrentDirectory()}/Data/SeedData/ArtWorksData.json"))

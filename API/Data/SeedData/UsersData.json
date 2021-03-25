@@ -1,39 +1,24 @@
 [
   {
-    "Id": "auth0|602fb8ef2918c60069e83722",
     "Email": "tremmert93@gmail.com",
-    "EmailVerified": true,
     "Username": "Tim",
-    "GivenName": "Tim",
-    "FamilyName": "Remmert",
     "Name": "Tim Remmert",
-    "Nickname": "Tim",
     "ImageUrl": "my image url here",
     "Latitude": 40.758896,
     "Longitude": -73.985130
   },
   {
-    "Id": "auth0|60588786794b1e006b0768cb",
     "Email": "example@gmail.com",
-    "EmailVerified": false,
     "Username": "IamSteveRogers",
-    "GivenName": "Steve",
-    "FamilyName": "Rogers",
     "Name": "Steve Rogers",
-    "Nickname": "Steve",
     "ImageUrl": "my image url here",
     "Latitude": 40.478671761,
     "Longitude": -74.4317886285
   },
   {
-    "Id": "auth0|60588dce794b1e006b076998",
     "Email": "test@example.com",
-    "EmailVerified": false,
-    "Username": "darthvader",
-    "GivenName": "Darth",
-    "FamilyName": "Vader",
+    "Username": "DarthVader",
     "Name": "Darth Vader",
-    "Nickname": "Darth",
     "ImageUrl": "my image url here",
     "Latitude": 37.773972,
     "Longitude": -122.431297

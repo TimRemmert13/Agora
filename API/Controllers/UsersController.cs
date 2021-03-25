@@ -34,7 +34,7 @@ namespace API.Controllers
         [HttpGet("{email}")]
         public async Task<UserDto> GetUserByEmail(string email)
         {
-            return await _userRepository.GetUserAsync(email);
+            return await _userRepository.GetUserByUsernameAsync(email);
         }
 
         [HttpGet]

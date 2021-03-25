@@ -18,7 +18,7 @@
         "Name": "tag 3"
       }
     ],
-    "AppUserId": "auth0|602fb8ef2918c60069e83722"
+    "AppUserUsername": "Tim"
   },
   {
     "Title": "Artwork 2",
@@ -39,7 +39,7 @@
         "Name": "tag 3"
       }
     ],
-    "AppUserId": "auth0|602fb8ef2918c60069e83722"
+    "AppUserUsername": "Tim"
   },
   {
     "Title": "Artwork 3",
@@ -60,7 +60,7 @@
         "Name": "tag 3"
       }
     ],
-    "AppUserId": "auth0|60588786794b1e006b0768cb"
+    "AppUserUsername": "IamSteveRogers"
   },
   {
     "Title": "Artwork 4",
@@ -81,6 +81,6 @@
         "Name": "tag 3"
       }
     ],
-    "AppUserId": "auth0|60588dce794b1e006b076998"
+    "AppUserUsername": "DarthVader"
   }
 ]

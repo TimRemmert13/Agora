@@ -22,22 +22,15 @@ namespace API.Data.Respositories
             _mapper = mapper;
         }
 
-        public async Task<bool> CreateUserAsync(AppUser user)
+        public async void DeleteUser(string username)
         {
-            await _context.Users.AddAsync(user);
-            bool result = await SaveAllAsync();
-            return result;
+            _context.Users.Remove(await _context.Users.Where(x => x.Username == username).SingleOrDefaultAsync());
         }
 
-        public async void DeleteUser(string email)
-        {
-            _context.Users.Remove(await _context.Users.Where(x => x.Email == email).SingleOrDefaultAsync());
-        }
-
-        public async Task<UserDto> GetUserAsync(string email)
+        public async Task<UserDto> GetUserByUsernameAsync(string username)
         {
             return _mapper.Map<AppUser, UserDto>(
-                await _context.Users.Include(u => u.ArtWorks).Where(x => x.Email == email).SingleOrDefaultAsync()
+                await _context.Users.Include(u => u.ArtWorks).Where(x => x.Username == username).SingleOrDefaultAsync()
                 );
         }
 

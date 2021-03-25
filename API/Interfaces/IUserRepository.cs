@@ -8,14 +8,11 @@ namespace API.Interfaces
 {
     public interface IUserRepository
     {
-        Task<UserDto> GetUserAsync(string email);
+        Task<UserDto> GetUserByUsernameAsync(string username);
         Task<PagedList<UserDto>> GetUsersAsync(UserParams userParams);
         void UpdateUser(AppUser user);
 
         Task<bool> SaveAllAsync();
         void DeleteUser(string email);
-
-        Task<bool> CreateUserAsync(AppUser user);
-
     }
 }

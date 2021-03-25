@@ -1,26 +1,18 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace API.DTOs
 {
     public class RegisterUserDto
     {
-        [JsonPropertyName("client_id")]
-        public string ClientId { get; set; }
-        [JsonPropertyName("email")]
-        public string Email { get; set; }
-        [JsonPropertyName("password")]
-        public string Password { get; set; }
-        [JsonPropertyName("connection")]
-        public string Connection { get; set; }
-        [JsonPropertyName("username")]
+        [Required]
         public string Username { get; set; }
-        [JsonPropertyName("given_name")]
-        public string GivenName { get; set; }
-        [JsonPropertyName("family_name")]
-        public string FamilyName { get; set; }
-        [JsonPropertyName("name")]
+        [Required]
+        public string Password { get; set; }
+        [Required]
+        public string Email { get; set; }
         public string Name { get; set; }
-        [JsonPropertyName("nickname")]
-        public string Nickname { get; set; }
+        public double Longitude { get; set; }
+        public double Latitude { get; set; }
     }
 }
