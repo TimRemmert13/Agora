@@ -42,7 +42,7 @@ namespace API.Data.Respositories
         {
             // build query
             var query = _context.ArtWorks.AsQueryable();
-            query = query.Where(a => a.AppUserUsername == artist);
+            query = query.Where(a => a.Artist.UserName == artist);
             
             // return paged result
             return await PagedList<ArtWorkDto>.CreateAsync(
@@ -66,6 +66,7 @@ namespace API.Data.Respositories
             // sort by order by value
             var source = new GeoCoordinate(artWorkParams.Latitude, artWorkParams.Longitude);
             var queryList = query.AsEnumerable();
+           
             queryList = artWorkParams.OrderBy switch
             {
                 "proximity" =>
@@ -73,7 +74,6 @@ namespace API.Data.Respositories
                         new GeoCoordinate(a.Artist.Latitude, a.Artist.Longitude).GetDistanceTo(source)
                     )
             };
-
             return PagedList<AllArtWorksDto>.Create(
                 _mapper.Map<IEnumerable<ArtWork>, IEnumerable<AllArtWorksDto>>(queryList), 
                 artWorkParams.PageNumber, 

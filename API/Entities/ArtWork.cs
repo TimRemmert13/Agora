@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace API.Entities
 {
@@ -16,8 +17,7 @@ namespace API.Entities
         public DateTime Created { get; set; } = DateTime.Now;
         public DateTime Updated { get; set; } = DateTime.Now;
         [Required]
-        public string AppUserUsername { get; set; }
-
+        public int ArtistId { get; set; }
         public AppUser Artist { get; set; }
 
         public override bool Equals(object obj)

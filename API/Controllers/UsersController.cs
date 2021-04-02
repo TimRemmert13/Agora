@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using API.Extensions;
 using API.Utilities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 
 namespace API.Controllers
@@ -24,16 +25,31 @@ namespace API.Controllers
             _config = config;
         }
 
-        [HttpGet("{email}")]
-        public async Task<UserDto> GetUserByEmail(string email)
+        /// <summary>
+        /// Gets a user by their username
+        /// </summary>
+        /// <param name="username"></param>
+        /// <returns>A user with the matching username</returns>
+        /// <response code="200">Returns successfully found user</response>
+        /// <response code="404">return not found if no username is found</response>
+        [HttpGet("{username}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<UserDto>> GetUserByUsername(string username)
         {
-            return await _unitOfWork.UserRepository.GetUserByUsernameAsync(email);
-        }
+            var user = await _unitOfWork.UserRepository.GetUserByUsernameAsync(username);
+            if (user != null)
+            {
+                return Ok(user);
+            }
 
+            return NotFound($"{username} could not be found");
+        }
+        
         [HttpGet]
-        public async Task<PagedList<UserDto>> GetAllUsers([FromQuery] UserParams userParams)
+        public async Task<ActionResult<PagedList<UserDto>>> GetAllUsers([FromQuery] UserParams userParams)
         {
-            return await _unitOfWork.UserRepository.GetUsersAsync(userParams);
+            return Ok(await _unitOfWork.UserRepository.GetUsersAsync(userParams));
         }
 
         [Authorize]
@@ -41,7 +57,7 @@ namespace API.Controllers
         public async Task<ActionResult> UpdateUser(AppUser updatedUser)
         {
             var user = await _unitOfWork.UserRepository.GetUserByUsernameAsync(User.GetUsername());
-            if (user.Username == updatedUser.Username)
+            if (user.Username == updatedUser.UserName)
             {
                 _unitOfWork.UserRepository.UpdateUser(updatedUser);
                 if (await _unitOfWork.Complete())

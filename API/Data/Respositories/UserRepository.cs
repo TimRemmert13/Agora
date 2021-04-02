@@ -24,13 +24,13 @@ namespace API.Data.Respositories
 
         public async void DeleteUser(string username)
         {
-            _context.Users.Remove(await _context.Users.Where(x => x.Username == username).SingleOrDefaultAsync());
+            _context.Users.Remove(await _context.Users.Where(x => x.UserName == username).SingleOrDefaultAsync());
         }
 
         public async Task<UserDto> GetUserByUsernameAsync(string username)
         {
             return _mapper.Map<AppUser, UserDto>(
-                await _context.Users.Include(u => u.ArtWorks).Where(x => x.Username == username).SingleOrDefaultAsync()
+                await _context.Users.Include(u => u.ArtWorks).Where(x => x.UserName == username).SingleOrDefaultAsync()
                 );
         }
 

@@ -1,23 +1,19 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Identity;
 
 namespace API.Entities
 {
-    public class AppUser
+    public class AppUser : IdentityUser<int>
     {
-        [Key] public Guid Id { get; set; } = Guid.NewGuid();
-        [Required]
-        public string Email { get; set; }
-        [Required]
-        public string Username { get; set; }
-        public string Name { get; set; }
-        public byte[] PasswordHash { get; set; }
-        public byte[] PasswordSalt { get; set; }
         public string ImageUrl { get; set; }
         public double Longitude { get; set; }
         public double Latitude { get; set; }
         public ICollection<ArtWork> ArtWorks { get; set; }
+        
+        public ICollection<AppUserRole> UserRoles { get; set; }
         
         public override bool Equals(object obj)
         {

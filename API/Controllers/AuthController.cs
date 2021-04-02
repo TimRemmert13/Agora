@@ -6,6 +6,8 @@ using API.DTOs;
 using API.Entities;
 using API.Interfaces;
 using AutoMapper;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,66 +15,102 @@ namespace API.Controllers
 {
     public class AuthController : BaseApiController
     {
-        private readonly DataContext _context;
+        private readonly UserManager<AppUser> _userManager;
+        private readonly SignInManager<AppUser> _signInManager;
         private readonly ITokenService _tokenService;
         private readonly IMapper _mapper;
 
-        public AuthController(DataContext context, ITokenService tokenService, IMapper mapper)
+        public AuthController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, ITokenService tokenService, IMapper mapper)
         {
-            _context = context;
+            _userManager = userManager;
+            _signInManager = signInManager;
             _tokenService = tokenService;
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Creates a new user from the RegisterUserDto object.
+        /// </summary>
+        /// <remarks>
+        /// Sample request:
+        /// POST /register
+        /// {
+        ///     "username": "Tim",
+        ///     "password": "pa$$w0rd",
+        ///     "email": "example@gmail.com",
+        ///     "Name": "Tim Remmert",
+        ///     "Latitude": 37.773972,
+        ///     "Longitude": -122.431297
+        /// }
+        /// </remarks>
+        /// <param name="newUser"></param>
+        /// <returns>The user name of the new user and a valid jwt token for logging in.</returns>
+        /// <response code="201">Successfully created new user</response>
+        /// <response code="400">Invalid or missing fields for the registerUserDto object</response>
         [HttpPost("register")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<AuthUserResponseDto>> Register(RegisterUserDto newUser)
         {
             if (await UserExists(newUser.Username)) return BadRequest("Username is taken");
 
             var user = _mapper.Map<AppUser>(newUser);
 
-            using var hmac = new HMACSHA512();
+            var result = await _userManager.CreateAsync(user, newUser.Password);
 
-            user.Username = newUser.Username.ToLower();
-            user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(newUser.Password));
-            user.PasswordSalt = hmac.Key;
+            if (!result.Succeeded) return BadRequest(result.Errors);
 
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-            return new AuthUserResponseDto
+            var roleResult = await _userManager.AddToRoleAsync(user, "Member");
+
+            if (!roleResult.Succeeded) return BadRequest(result.Errors);
+            
+            return Created($"{BaseUrl}/users/{user.UserName}",new AuthUserResponseDto
             {
-                Username = user.Username,
-                Token = _tokenService.CreateToken(user),
-            };
+                Username = user.UserName,
+                Token = await _tokenService.CreateToken(user),
+            });
         }
 
+        /// <summary>
+        /// Logs in a user with the given credentials.
+        /// </summary>
+        /// <remarks>
+        /// Sample Request:
+        /// 
+        ///     POST /auth/login
+        ///     {
+        ///         "username": "Tim",
+        ///         "password": "pa$$w0rd"
+        ///     }
+        /// </remarks>
+        /// <param name="loginDto"></param>
+        /// <returns></returns>
+        /// <response code="200">Successfully logs in user</response>
+        /// <response code="401">Incorrect username or password given</response>
         [HttpPost("login")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<AuthUserResponseDto>> Login(LoginDto loginDto)
         {
             loginDto.Username = loginDto.Username.ToLower();
-            var user = await _context.Users.SingleOrDefaultAsync(u => u.Username == loginDto.Username);
+            var user = await _userManager.Users.SingleOrDefaultAsync(u => u.UserName == loginDto.Username);
 
             if (user == null) return Unauthorized("Incorrect Username or password");
 
-            using var hmac = new HMACSHA512(user.PasswordSalt);
+            var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
 
-            var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(loginDto.Password));
+            if (!result.Succeeded) return Unauthorized();
 
-            for (int i = 0; i < computedHash.Length; i++)
+            return Ok(new AuthUserResponseDto
             {
-                if (computedHash[i] != user.PasswordHash[i]) return Unauthorized("Incorrect Username or Password");
-            }
-
-            return new AuthUserResponseDto
-            {
-                Username = user.Username,
-                Token = _tokenService.CreateToken(user)
-            };
+                Username = user.UserName,
+                Token = await _tokenService.CreateToken(user)
+            });
         }
 
         private async Task<bool> UserExists(string username)
         {
-            return await _context.Users.AnyAsync(u => u.Username == username.ToLower());
+            return await _userManager.Users.AnyAsync(u => u.UserName == username.ToLower());
         }
     }
 }

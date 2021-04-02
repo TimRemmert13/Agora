@@ -1,7 +1,7 @@
 [
   {
     "Email": "tremmert93@gmail.com",
-    "Username": "Tim",
+    "UserName": "Tim",
     "Name": "Tim Remmert",
     "ImageUrl": "my image url here",
     "Latitude": 40.758896,
@@ -9,7 +9,7 @@
   },
   {
     "Email": "example@gmail.com",
-    "Username": "IamSteveRogers",
+    "UserName": "IamSteveRogers",
     "Name": "Steve Rogers",
     "ImageUrl": "my image url here",
     "Latitude": 40.478671761,
@@ -17,7 +17,7 @@
   },
   {
     "Email": "test@example.com",
-    "Username": "DarthVader",
+    "UserName": "DarthVader",
     "Name": "Darth Vader",
     "ImageUrl": "my image url here",
     "Latitude": 37.773972,

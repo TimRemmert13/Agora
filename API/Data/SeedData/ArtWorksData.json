@@ -18,7 +18,7 @@
         "Name": "tag 3"
       }
     ],
-    "AppUserUsername": "Tim"
+    "ArtistId": 1
   },
   {
     "Title": "Artwork 2",
@@ -39,7 +39,7 @@
         "Name": "tag 3"
       }
     ],
-    "AppUserUsername": "Tim"
+    "ArtistId": 1
   },
   {
     "Title": "Artwork 3",
@@ -60,7 +60,7 @@
         "Name": "tag 3"
       }
     ],
-    "AppUserUsername": "IamSteveRogers"
+    "ArtistId": 2
   },
   {
     "Title": "Artwork 4",
@@ -81,6 +81,6 @@
         "Name": "tag 3"
       }
     ],
-    "AppUserUsername": "DarthVader"
+    "ArtistId": 3
   }
 ]
