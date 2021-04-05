@@ -34,6 +34,11 @@ namespace API.Data.Respositories
                 );
         }
 
+        public async Task<UserDto> GetUserByIdAsync(int userId)
+        {
+            return _mapper.Map<AppUser, UserDto>(await _context.Users.SingleOrDefaultAsync(u => u.Id == userId));
+        }
+
         public async Task<PagedList<UserDto>> GetUsersAsync(UserParams userParams)
         {
             var query = _context.Users.AsQueryable();

@@ -14,6 +14,7 @@ namespace API.Data
         {
         }
         public DbSet<ArtWork> ArtWorks { get; set; }
+        public DbSet<Like> Likes { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -28,6 +29,21 @@ namespace API.Data
                 .WithOne(u => u.Role)
                 .HasForeignKey(ur => ur.RoleId)
                 .IsRequired();
+            
+            builder.Entity<Like>()
+                .HasKey(l => new {l.SourceUserId, l.LikedArtId});
+
+            builder.Entity<Like>()
+                .HasOne(s => s.SourceUser)
+                .WithMany(l => l.LikedArt)
+                .HasForeignKey(s => s.SourceUserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<Like>()
+                .HasOne(l => l.LikedArt)
+                .WithMany(l => l.LikedByUsers)
+                .HasForeignKey(s => s.LikedArtId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

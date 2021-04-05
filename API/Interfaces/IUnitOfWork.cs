@@ -6,6 +6,7 @@ namespace API.Interfaces
     {
         IUserRepository UserRepository { get; }
         IArtWorkRepository ArtWorkRepository { get; }
+        ILikesRepository LikesRepository { get; }
         Task<bool> Complete();
         bool HasChanges();
     }

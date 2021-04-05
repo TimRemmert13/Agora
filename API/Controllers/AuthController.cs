@@ -33,15 +33,16 @@ namespace API.Controllers
         /// </summary>
         /// <remarks>
         /// Sample request:
-        /// POST /register
-        /// {
-        ///     "username": "Tim",
-        ///     "password": "pa$$w0rd",
-        ///     "email": "example@gmail.com",
-        ///     "Name": "Tim Remmert",
-        ///     "Latitude": 37.773972,
-        ///     "Longitude": -122.431297
-        /// }
+        /// 
+        ///     POST /auth/register
+        ///     {
+        ///         "username": "Tim",
+        ///         "password": "pa$$w0rd",
+        ///         "email": "example@gmail.com",
+        ///         "Name": "Tim Remmert",
+        ///         "Latitude": 37.773972,
+        ///         "Longitude": -122.431297
+        ///     }
         /// </remarks>
         /// <param name="newUser"></param>
         /// <returns>The user name of the new user and a valid jwt token for logging in.</returns>

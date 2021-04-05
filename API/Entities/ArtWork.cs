@@ -19,6 +19,7 @@ namespace API.Entities
         [Required]
         public int ArtistId { get; set; }
         public AppUser Artist { get; set; }
+        public ICollection<Like> LikedByUsers { get; set; }
 
         public override bool Equals(object obj)
         {

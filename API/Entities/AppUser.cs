@@ -9,11 +9,13 @@ namespace API.Entities
     public class AppUser : IdentityUser<int>
     {
         public string ImageUrl { get; set; }
+        public string Name { get; set; }
         public double Longitude { get; set; }
         public double Latitude { get; set; }
         public ICollection<ArtWork> ArtWorks { get; set; }
         
         public ICollection<AppUserRole> UserRoles { get; set; }
+        public ICollection<Like> LikedArt { get; set; }
         
         public override bool Equals(object obj)
         {

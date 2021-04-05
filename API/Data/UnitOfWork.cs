@@ -18,6 +18,7 @@ namespace API.Data
 
         public IUserRepository UserRepository => new UserRepository(_context, _mapper);
         public IArtWorkRepository ArtWorkRepository => new ArtWorkRespository(_context, _mapper);
+        public ILikesRepository LikesRepository => new LikesRepository(_context, _mapper);
         public async Task<bool> Complete()
         {
             return await _context.SaveChangesAsync() > 0;

@@ -53,7 +53,7 @@ namespace API.Controllers
         [HttpPost]
         public async Task<ActionResult<ArtWork>> CreateArtWork(ArtWork artWork)
         {
-            var user = await _unitOfWork.UserRepository.GetUserByUsernameAsync(User.GetUsername());
+            var user = await _unitOfWork.UserRepository.GetUserByIdAsync(Int32.Parse(User.GetUserId()));
             if (user.Id == artWork.ArtistId)
             {
                 var newArtWork = await _unitOfWork.ArtWorkRepository.CreateArtWorkAsync(artWork);
@@ -69,7 +69,7 @@ namespace API.Controllers
         [HttpPut]
         public async Task<ActionResult> UpdateArtWork(ArtWork artWork, [FromHeader] string authorization)
         {
-            var user = await _unitOfWork.UserRepository.GetUserByUsernameAsync(User.GetUsername());
+            var user = await _unitOfWork.UserRepository.GetUserByIdAsync(Int32.Parse(User.GetUserId()));
             if (user.Id != artWork.ArtistId) return BadRequest("Unable to Update artwork");
             
             _unitOfWork.ArtWorkRepository.Update(artWork);

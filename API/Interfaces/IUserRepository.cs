@@ -10,6 +10,7 @@ namespace API.Interfaces
     {
         Task<UserDto> GetUserByUsernameAsync(string username);
         Task<PagedList<UserDto>> GetUsersAsync(UserParams userParams);
+        Task<UserDto> GetUserByIdAsync(int userId);
         void UpdateUser(AppUser user);
         void DeleteUser(string email);
     }
