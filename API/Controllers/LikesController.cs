@@ -72,10 +72,31 @@ namespace API.Controllers
             return BadRequest("Unable to delete like");
         }
 
-        [HttpGet("user/{userId}")]
-        public async Task<ActionResult<ICollection<Like>>> GetUserLikes(int userId)
+        [HttpGet("artwork/{artWorkId}")]
+        public async Task<ActionResult<ICollection<LikeDto>>> GetArtWorkLikes(string artWorkId)
         {
-            return Ok(await _unitOfWork.LikesRepository.GetLikedArtWork(userId));
+            var parsedId = Guid.Parse(artWorkId);
+            var likes = await _unitOfWork.LikesRepository.GetArtWorkLikesAsync(parsedId);
+            
+            if (likes == null) return BadRequest("Invalid artwork Id");
+
+            return Ok(likes);
+        }
+        
+        [HttpGet("liked-by-others/{userId}")]
+        public async Task<ActionResult<ICollection<LikeDto>>> GetArtWorkLikedByOtherUsers(int userId)
+        {
+            var likes = await _unitOfWork.LikesRepository.GetUserLikesAsync(userId);
+            
+            if (likes == null) return BadRequest("Invalid artwork Id");
+
+            return Ok(likes);
+        }
+
+        [HttpGet("liked-by/{userId}")]
+        public async Task<ActionResult<ICollection<Like>>> GetArtWorkLikedByUser(int userId)
+        {
+            return Ok(await _unitOfWork.LikesRepository.GetLikedArtWorkAsync(userId));
         }
     }
 }

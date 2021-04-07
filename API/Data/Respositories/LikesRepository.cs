@@ -31,7 +31,24 @@ namespace API.Data.Respositories
             _context.Likes.Remove(like);
         }
 
-        public async Task<ICollection<LikeDto>> GetLikedArtWork(int userId)
+        public async Task<ICollection<LikeDto>> GetArtWorkLikesAsync(Guid id)
+        {
+            return _mapper.Map<ICollection<Like>, ICollection<LikeDto>>(
+                await _context.Likes.Where(l => l.LikedArtId == id).ToListAsync()
+                );
+        }
+
+        public async Task<ICollection<LikeDto>> GetUserLikesAsync(int userId)
+        {
+            return _mapper.Map<ICollection<Like>, ICollection<LikeDto>>(
+                await _context.Likes
+                    .Include(l => l.LikedArt)
+                    .Where(l => l.LikedArt.ArtistId == userId)
+                    .ToListAsync()
+            );
+        }
+
+        public async Task<ICollection<LikeDto>> GetLikedArtWorkAsync(int userId)
         {
             var likes = await _context.Likes
                 .Include(l => l.LikedArt)
